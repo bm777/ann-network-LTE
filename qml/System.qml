@@ -16,18 +16,27 @@ Item {
         id: valueSource
     }
 
+
     Image {
         id: refresh
         rotation: 0
         scale: 0.7
-        x: root.width - refresh.width
+        x: root.width - refresh.width - 40
         source: "../images/refresh.png"
+    }
+    Image {
+        id: menu
+        rotation: 0
+        scale: 0.4
+        x: root.width - menu.width + 25
+//        y: 10
+        source: "../images/menu.png"
     }
     Rectangle {
         id: rec_r
         width: refresh.width * 0.7
         height: refresh.height * 0.7
-        x: root.width - refresh.width * 0.85
+        x: root.width - refresh.width - 25
         y: 17
         radius: 10
         color: state === "InMouse" ? "#309c88ff" : "transparent"
@@ -36,6 +45,12 @@ Item {
         states: [
             State {
                 name: "OutMouse"
+                PropertyChanges {
+                    target: rec_r; color: "transparent"
+                }
+            },
+            State {
+                name: "Intermediate"
                 PropertyChanges {
                     target: rec_r; color: "transparent"
                 }
@@ -68,25 +83,109 @@ Item {
                     _right.state = "Out";
                    item_log.visible = true;
                 }
+                _middle.visible=false;
+                item_log.visible = true;
+                item_config.visible=false;
                 last.visible = false;
                 rec_r.state = "Clicked";
                 progress.value = 0.0
             }
             onExited: {
-                rec_r.state = "OutMouse"
+                rec_r.state = "OutMouse";
+                rec_r.state = "Intermediate";
+
             }
         }
         NumberAnimation {
             target: refresh
             running: rec_r.state === "InMouse" ? true : false
             property: "rotation"
-            from: refresh.rotation
-            to: refresh.rotation + 180
+            from: 0
+            to: 90
+            duration: 300
+//            easing.type: Easing.InOutQuad
+        }
+        NumberAnimation {
+            target: refresh
+            running: rec_r.state === "Intermediate" ? true : false
+            property: "rotation"
+            from: 90
+            to: 0
             duration: 500
 //            easing.type: Easing.InOutQuad
         }
 
     }
+    Rectangle {
+        id: rect_menu
+        width: menu.width * 0.5
+        height: menu.height * 0.7
+        x: root.width - menu.width * 0.51
+        y: 17
+        radius: 10
+        color: state === "InMouse" ? "#309c88ff" : "transparent"
+        state: "OutMouse"
+        states: [
+            State {
+                name: "OutMouse"
+                PropertyChanges {
+                    target: rect_menu; color: "transparent"
+                }
+            },
+            State {
+                name: "Intermediate"
+                PropertyChanges {
+                    target: rect_menu; color: "transparent"
+                }
+            },
+            State {
+                name: "InMouse"
+                PropertyChanges {
+                    target: rect_menu; color: "#189c88ff"
+                }
+            },
+            State {
+                name: "Clicked"
+                PropertyChanges {
+                    target: rect_menu; color: "#189c88ff"; //159c88ff
+                }
+            }
+        ]
+        MouseArea {
+            anchors.fill: rect_menu
+            hoverEnabled: true
+            onEntered: {
+                rect_menu.state = "InMouse";
+                console.log("onEntered");
+            }
+            onClicked: {
+
+            }
+            onExited: {
+                rect_menu.state = "OutMouse";
+                rect_menu.state = "Intermediate"
+            }
+        }
+        NumberAnimation {
+            target: menu
+            running: rect_menu.state === "InMouse" ? true : false
+            property: "rotation"
+            from: 0
+            to: 90
+            duration: 300
+//            easing.type: Easing.InOutQuad
+        }
+        NumberAnimation {
+            target: menu
+            running: rect_menu.state === "Intermediate" ? true : false
+            property: "rotation"
+            from: 90
+            to: 0
+            duration: 500
+//            easing.type: Easing.InOutQuad
+        }
+    }
+
 
     Rectangle {
         width: parent.width
@@ -99,10 +198,7 @@ Item {
                     GradientStop { position: 0.0; color: "#780000ff"}
                     GradientStop { position: 1.0; color: "#2800000f"}
                 }
-        Text {
-            id: text_over_blur
-            text: qsTr("")
-        }
+
         Rectangle {
             id: rect
             anchors.centerIn: parent
@@ -120,7 +216,7 @@ Item {
                 Text {
                     id: item_log
                     anchors.centerIn: general_1
-                    text: qsTr("Commençer par importer le fichier <b>log</b> pour les analyses.")
+                    text: qsTr("Commençer par importer le fichier <b>PKI</b> pour les analyses.")
                     color: "#a8000000"
                     font.pointSize: 15
                     font.italic: true
@@ -145,7 +241,7 @@ Item {
                         anchors.centerIn: parent
                         Switch {
                             id: select1
-                            text: "Utiliser les threads"
+                            text: "Prévision"
                             background: Rectangle {
                                 color: select1.down ? "#289c88ff" : "#fff"
                                 radius: 20
@@ -153,6 +249,11 @@ Item {
                             TapHandler {
                                 id: handler1
                                 onTapped: {
+                                    if(select1.checked){
+                                        select2.checkable = false;
+                                    } else {
+                                        select2.checkable = true;
+                                    }
                                      console.log("state1 == " + select1.checked + ", state2 == " + select2.checked);
                                 }
                             }
@@ -160,7 +261,7 @@ Item {
                         }
                         Switch {
                             id: select2
-                            text: "Afficher le Pourcentage"
+                            text: "Consultation"
                             background: Rectangle {
                                 color: select2.down ? "#289c88ff" : "#fff"
                                 radius: 20
@@ -168,6 +269,11 @@ Item {
                             TapHandler {
                                 id: handler2
                                 onTapped: {
+                                    if(select2.checked){
+                                        select1.checkable = false;
+                                    } else {
+                                        select1.checkable = true;
+                                    }
                                      console.log("state1 == " + select1.checked + "; state2 == " + select2.checked);
                                 }
                             }
@@ -175,7 +281,7 @@ Item {
                     }
                     Text {
                         id: trans
-                        text: qsTr("Appuyer sur le boutton <b>Lancer</b> pour analyser.")
+                        text: qsTr("Appuyer sur le boutton <b>Lançer</b> pour analyser.")
                         anchors.horizontalCenter: parent.horizontalCenter
                         y: 150
                         font.pointSize: 15
@@ -263,6 +369,17 @@ Item {
 //    des BTS par les paramètres
 //           spatio-temporels.
 //    Ses extensions: *.log, *.txt"
+    Text {
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: 20
+//        z: -1 // derriere
+        id: text_over_blur
+        text: "<b>PKI Administration</b>"
+        color: "#ffffff"
+        opacity: 0.9
+        font.family: "Helvetica"
+        font.pointSize: 30
+    }
     Item {
         id: bottom_infos
         width: root.width
@@ -313,7 +430,7 @@ Item {
                         y: 40
                         Text {
                             id: log
-                            text: "Ses extensions: *.log, *.txt"
+                            text: "fichier P.K.I: *.log, *.txt"
                             font.pointSize: 12
                             color: "#a8000000"
 //                            anchors.fill: parentsr
