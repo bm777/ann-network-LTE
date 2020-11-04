@@ -7,5 +7,9 @@ function check(filename) {
     console.log(".xlsx");
 }
 
+// function to launch help page
+function start_help() {
+    help.visible = true;
+}
 
 // ======================================================================================

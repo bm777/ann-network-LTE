@@ -5,7 +5,7 @@ import QtQuick.Controls 2.15
 import Qt.labs.platform 1.1
 //import QtQuick.Controls.Styles 2.15
 import "operations.js" as Logic
-
+// home_color 780000ff
 Item {
     width: root.width
     height: root.height
@@ -180,9 +180,15 @@ Item {
                     }
                     MenuItem {
                         text: "Aide !"
+                        onTriggered: {
+                            shadow.visible = true
+                            help.visible = true
+                        }
                     }
                     MenuItem {
                         text: "Quitter"
+                        shortcut: "Ctrl+Q"
+                        onTriggered: Qt.quit()
                     }
 
             }
@@ -405,13 +411,44 @@ Item {
         font.family: "Helvetica"
         font.pointSize: 30
     }
+    Rectangle {
+        id: shadow
+        visible: false
+        width: root.width
+        height: root.height
+        color: "#80000000"
+
+        ColorAnimation on color {
+            running: shadow.visible
+            duration: 500
+            from: "#00000000"
+            to: "#80000000"
+        }
+
+
+    }
     // =============================== user =============================
-    // =============================== history =============================
+    // =============================== history ==========================
     // =============================== help =============================
     Help {
+        id: help
+        visible: false
         anchors {horizontalCenter: parent.horizontalCenter}
         y: 10
+        NumberAnimation on opacity {
+            running: help.visible
+            from: 0
+            to: 1
+            duration: 400
+        }
+        NumberAnimation on height{
+            running: help.visible
+            from: 0
+            to: 500
+            duration: 500
+        }
     }
+
 
     Item {
         id: bottom_infos
