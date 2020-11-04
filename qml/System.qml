@@ -156,16 +156,39 @@ Item {
             hoverEnabled: true
             onEntered: {
                 rect_menu.state = "InMouse";
-                console.log("onEntered");
+//                console.log("onEntered");
             }
             onClicked: {
+                _3point.open();
+//                console.log("on");
 
             }
             onExited: {
                 rect_menu.state = "OutMouse";
                 rect_menu.state = "Intermediate"
             }
+            Menu {
+                    id: _3point
+//                    y: rect_menu.height
+
+                    MenuItem {
+                        text: "Utilisateur..."
+                    }
+                    MenuItem {
+                        text: "Histoique..."
+
+                    }
+                    MenuItem {
+                        text: "Aide !"
+                    }
+                    MenuItem {
+                        text: "Quitter"
+                    }
+
+            }
         }
+
+
         NumberAnimation {
             target: menu
             running: rect_menu.state === "InMouse" ? true : false
@@ -185,6 +208,7 @@ Item {
 //            easing.type: Easing.InOutQuad
         }
     }
+
 
 
     Rectangle {
@@ -311,6 +335,7 @@ Item {
                         anchors.horizontalCenter: parent.horizontalCenter
                         width: 500
                         y: 50
+                        clip: true
                         contentItem: Rectangle {
                                         anchors.left: progress.left
                                         anchors.verticalCenter: progress.verticalCenter
@@ -380,6 +405,14 @@ Item {
         font.family: "Helvetica"
         font.pointSize: 30
     }
+    // =============================== user =============================
+    // =============================== history =============================
+    // =============================== help =============================
+    Help {
+        anchors {horizontalCenter: parent.horizontalCenter}
+        y: 10
+    }
+
     Item {
         id: bottom_infos
         width: root.width

@@ -6,7 +6,7 @@ from PySide2.QtWidgets import *
 from PySide2.QtCore import *
 from PySide2.QtQml import *
 from PySide2 import QtNetwork
-from PySide2 import QtOpenGL
+#from PySide2 import QtOpenGL
 from operations import  *
 
 
