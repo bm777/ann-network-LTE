@@ -173,9 +173,15 @@ Item {
 
                     MenuItem {
                         text: "Utilisateur..."
+                        onTriggered: {
+                            shadow.visible = true
+                            user.visible = true
+                            bottom_infos.visible = false
+                        }
                     }
                     MenuItem {
-                        text: "Histoique..."
+                        text: "Historique..."
+
 
                     }
                     MenuItem {
@@ -216,185 +222,193 @@ Item {
     }
 
 
-
-    Rectangle {
-        width: parent.width
-        id: roundRect
-        x: 0
-        y:-20
-        radius: 20
-        height: parent.height  * 0.6
-        gradient: Gradient {
-                    GradientStop { position: 0.0; color: "#780000ff"}
-                    GradientStop { position: 1.0; color: "#2800000f"}
-                }
-
+    Item {
+        id: parent_roundRect
+        width: root.width
+        height: root.height * 0.6
+        y: -20
+        visible: true
         Rectangle {
-            id: rect
-            anchors.centerIn: parent
-//            implicitHeight: 200 + 100
-//            implicitWidth: 600 +300
-            height: 200
-            radius: 10
-            width: 600
-            color: "white"
-            Item {
-                id: general_1
-                width: rect.width
-                height: rect.height
+            anchors.fill: parent
+            width: parent.width
+            id: roundRect
+            x: 0
+            y:-20
+            radius: 20
+            height: parent.height  * 0.6
+            gradient: Gradient {
+                        GradientStop { position: 0.0; color: "#780000ff"}
+                        GradientStop { position: 1.0; color: "#2800000f"}
+                    }
 
-                Text {
-                    id: item_log
-                    anchors.centerIn: general_1
-                    text: qsTr("Commençer par importer le fichier <b>PKI</b> pour les analyses.")
-                    color: "#a8000000"
-                    font.pointSize: 15
-                    font.italic: true
-                    visible: true
+            Rectangle {
+                id: rect
+                anchors.centerIn: parent
+    //            implicitHeight: 200 + 100
+        //            implicitWidth: 600 +300
+                    height: 200
+                    radius: 10
+                    width: 600
+                    color: "white"
+                    Item {
+                        id: general_1
+                        width: rect.width
+                        height: rect.height
+
+                        Text {
+                            id: item_log
+                            anchors.centerIn: general_1
+                            text: qsTr("Veuillez importer le fichier <b>KPI</b> pour la prévision.")
+                            color: "#a8000000"
+                            font.pointSize: 15
+                            font.italic: true
+                            visible: true
 
 
+                            NumberAnimation {
+                                target: item_log
+                                running: item_log.visible
+                                property: "opacity"
+                                from: 0.0
+                                to: 1.0
+                                duration: 1500
+                                easing.type: Easing.InOutQuad
+                            }
+                        }
+                        Item {
+                            id: item_config
+                            anchors.fill: parent
+                            visible: false
+                            Row {
+                                anchors.centerIn: parent
+                                Switch {
+                                    id: select1
+                                    text: "Prévision"
+                                    background: Rectangle {
+                                        color: select1.down ? "#289c88ff" : "#fff"
+                                        radius: 20
+                                    }
+                                    TapHandler {
+                                        id: handler1
+                                        onTapped: {
+                                            if(select1.checked){
+                                                select2.checkable = false;
+                                            } else {
+                                                select2.checkable = true;
+                                            }
+                                             console.log("state1 == " + select1.checked + ", state2 == " + select2.checked);
+                                        }
+                                    }
+
+                                }
+                                Switch {
+                                    id: select2
+                                    text: "Consultation"
+                                    background: Rectangle {
+                                        color: select2.down ? "#289c88ff" : "#fff"
+                                        radius: 20
+                                    }
+                                    TapHandler {
+                                        id: handler2
+                                        onTapped: {
+                                            if(select2.checked){
+                                                select1.checkable = false;
+                                            } else {
+                                                select1.checkable = true;
+                                            }
+                                             console.log("state1 == " + select1.checked + "; state2 == " + select2.checked);
+                                        }
+                                    }
+                                }
+                            }
+                            Text {
+                                id: trans
+                                text: qsTr("Appuyer sur le boutton <b>Lançer</b> pour analyser.")
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                y: 150
+                                font.pointSize: 15
+                                font.italic: true
+                                visible: true
+                            }
+                        }
+                        Item {
+                            id: last
+                            anchors.centerIn: parent
+                            visible: false
+
+                            Text {
+                                id: text_last
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                text: select2.checked ? bridge.data1 + "%" : bridge.data1
+                                y: -20
+                                Behavior on text {
+                                    NumberAnimation {running: select1.checked ? true : false; duration: select1.checked ? 2000 : 3000}
+                                }
+                            }
+
+
+                            ProgressBar {
+                                id: progress
+                                value: bridge.data2
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                width: 500
+                                y: 50
+                                clip: true
+                                contentItem: Rectangle {
+                                                anchors.left: progress.left
+                                                anchors.verticalCenter: progress.verticalCenter
+                                                width: progress.visualPosition * progress.width
+                                                height: progress.height
+                                                radius: 2
+                                                color: "#780000ff"
+                                                //z: 10
+                                            }
+
+                                Behavior on value {
+                                    NumberAnimation {duration: select1.checked ? 2000 : 3000}
+                                }
+                            }
+
+
+                        }
+
+                    }
+                    //==================================
                     NumberAnimation {
-                        target: item_log
-                        running: item_log.visible
-                        property: "opacity"
-                        from: 0.0
-                        to: 1.0
-                        duration: 1500
+                        target: rect
+                        running: (_right.state === "Out") ? true : false
+                        property: "height"
+                        from: rect.height
+                        to: rect.height - 100
+                        duration: 500
                         easing.type: Easing.InOutQuad
                     }
-                }
-                Item {
-                    id: item_config
-                    anchors.fill: parent
-                    visible: false
-                    Row {
-                        anchors.centerIn: parent
-                        Switch {
-                            id: select1
-                            text: "Prévision"
-                            background: Rectangle {
-                                color: select1.down ? "#289c88ff" : "#fff"
-                                radius: 20
-                            }
-                            TapHandler {
-                                id: handler1
-                                onTapped: {
-                                    if(select1.checked){
-                                        select2.checkable = false;
-                                    } else {
-                                        select2.checkable = true;
-                                    }
-                                     console.log("state1 == " + select1.checked + ", state2 == " + select2.checked);
-                                }
-                            }
 
-                        }
-                        Switch {
-                            id: select2
-                            text: "Consultation"
-                            background: Rectangle {
-                                color: select2.down ? "#289c88ff" : "#fff"
-                                radius: 20
-                            }
-                            TapHandler {
-                                id: handler2
-                                onTapped: {
-                                    if(select2.checked){
-                                        select1.checkable = false;
-                                    } else {
-                                        select1.checkable = true;
-                                    }
-                                     console.log("state1 == " + select1.checked + "; state2 == " + select2.checked);
-                                }
-                            }
-                        }
+                    NumberAnimation {
+                        target: rect
+                        running: (_right.state === "Out") ? true : false
+                        property: "width"
+                        from: rect.width
+                        to: rect.width - 300
+                        duration: 500
+                        easing.type: Easing.InOutQuad
                     }
-                    Text {
-                        id: trans
-                        text: qsTr("Appuyer sur le boutton <b>Lançer</b> pour analyser.")
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        y: 150
-                        font.pointSize: 15
-                        font.italic: true
-                        visible: true
-                    }
-                }
-                Item {
-                    id: last
-                    anchors.centerIn: parent
-                    visible: false
-
-                    Text {
-                        id: text_last
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        text: select2.checked ? bridge.data1 + "%" : bridge.data1
-                        y: -20
-                        Behavior on text {
-                            NumberAnimation {running: select1.checked ? true : false; duration: select1.checked ? 2000 : 3000}
-                        }
-                    }
-
-
-                    ProgressBar {
-                        id: progress
-                        value: bridge.data2
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        width: 500
-                        y: 50
-                        clip: true
-                        contentItem: Rectangle {
-                                        anchors.left: progress.left
-                                        anchors.verticalCenter: progress.verticalCenter
-                                        width: progress.visualPosition * progress.width
-                                        height: progress.height
-                                        radius: 2
-                                        color: "#780000ff"
-                                        //z: 10
-                                    }
-
-                        Behavior on value {
-                            NumberAnimation {duration: select1.checked ? 2000 : 3000}
-                        }
-                    }
-
 
                 }
-
+                DropShadow {
+                anchors.fill: rect
+        //        cached: true
+                horizontalOffset: 5
+                verticalOffset: 5
+                radius: 8
+                samples: 17
+                width: 640
+                color: "#80000000"
+                source: rect
+                }
             }
-            //==================================
-            NumberAnimation {
-                target: rect
-                running: (_right.state === "Out") ? true : false
-                property: "height"
-                from: rect.height
-                to: rect.height - 100
-                duration: 500
-                easing.type: Easing.InOutQuad
-            }
-
-            NumberAnimation {
-                target: rect
-                running: (_right.state === "Out") ? true : false
-                property: "width"
-                from: rect.width
-                to: rect.width - 300
-                duration: 500
-                easing.type: Easing.InOutQuad
-            }
-
-        }
-        DropShadow {
-        anchors.fill: rect
-//        cached: true
-        horizontalOffset: 5
-        verticalOffset: 5
-        radius: 8
-        samples: 17
-        width: 640
-        color: "#80000000"
-        source: rect
-        }
     }
+
 //    "Fichier log sont les fichier
 //    qui montre le comportement
 //    des BTS par les paramètres
@@ -405,11 +419,11 @@ Item {
         y: 20
 //        z: -1 // derriere
         id: text_over_blur
-        text: "<b>PKI Administration</b>"
+        text: "<b>Bienvenue sur NETWORK TRAFFIC PREDICTION </b>"
         color: "#ffffff"
         opacity: 0.9
         font.family: "Helvetica"
-        font.pointSize: 30
+        font.pointSize: 25
     }
     Rectangle {
         id: shadow
@@ -428,6 +442,25 @@ Item {
 
     }
     // =============================== user =============================
+    User {
+        id: user
+//        anchors.horizontalCenter: parent.horizontalCenter
+//        width: 0.98 * rot.width; height: 0.4 * rot.width
+        visible: false
+        headerModel: [
+            {text: "Color", width: 0.3},
+            {text: "Type", width: 0.2},
+            {text: "Hexadecimal", width: 0.5},
+        ]
+
+        dataModel: [
+            ['Red',    '1', '#ff0000'],
+            ['Green',   '2',  '#00ff00'],
+            ['Blue',   '3',  '#0000ff'],
+        ]
+        onClicked: print('onClicked', row, JSON.stringify(rowData))
+    }
+
     // =============================== history ==========================
     // =============================== help =============================
     Help {
@@ -452,6 +485,7 @@ Item {
 
     Item {
         id: bottom_infos
+        visible: true
         width: root.width
         height: roundRect.height
         y: roundRect.height + 20

@@ -43,9 +43,9 @@ Item {
             color: "#80000000"
             y: 50
             leftPadding: 20
-            text: "1. Commencer par importer le fichier pki pour
-    lancer les analyse sur le reseaux. les informations
-    celle du réseau LTE(Long Term Evolution), commu-
+            text: "1. Commencez par importer le fichier KPI pour
+    lancer les analyses sur le reseau. Les informations sont
+    celles du réseau LTE(Long Term Evolution), commu-
     némment appelé 4G."
         }
 
@@ -53,17 +53,17 @@ Item {
             color: "#80000000"
             y: 140
             leftPadding: 20
-            text: "2. Puis la partie pré-analyse, est configurer
-    de l'analyse. Il y'a deux possibilité: l'une est de
-    <prevenir> (les model mathématiques de calcul
-    y sont utilisés) et l'autre <consultation>."
+            text: "2. Puis la partie pré-analyse, est configurée .
+     Ici il sera question de prévoir le trafic 4G grâce
+     aux modèles de prévision choisi et enfin d'afficher
+    le graphe qui sera utilisé par l'expert métier."
         }
         Text {
             color: "#80000000"
             y: 232
             leftPadding: 20
             text: "3. Post-analyse se déclenche au bouton Lancer.
-    L'option verbose est activé par defaut, pour
+    L'option verbose est activée par defaut, pour
     afficher les processus sur le calcul de la
     probabilité."
         }
@@ -86,7 +86,8 @@ Item {
             y: 450
             x: 200
             leftPadding: 10
-            text: "Fait par : <b>Ngando maeva C.</b>" // github.com/bm777
+            text: "Fait par : <b>NGANDO BEDIM
+                               Constance Maeva .</b>" // github.com/bm777
         }
     }
     Item {
