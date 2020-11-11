@@ -419,7 +419,7 @@ Item {
         y: 20
 //        z: -1 // derriere
         id: text_over_blur
-        text: "<b>Bienvenue sur NETWORK TRAFFIC PREDICTION </b>"
+        text: "<b>BIENVENUE SUR LA PREVISION DE TRAFFIC DU RESEAU 4G</b>"
         color: "#ffffff"
         opacity: 0.9
         font.family: "Helvetica"
@@ -468,6 +468,7 @@ Item {
         visible: false
         anchors {horizontalCenter: parent.horizontalCenter}
         y: 10
+//        x: -100
         NumberAnimation on opacity {
             running: help.visible
             from: 0
@@ -786,7 +787,7 @@ Item {
                     width: 200
                     Text {
                         id: text_result
-                        text: "<b>Lancer</b>"
+                        text: "<b>Graphiques</b>"
                         font.pointSize: 20
                         color: "#a8000000"
                         anchors.horizontalCenter: parent.horizontalCenter

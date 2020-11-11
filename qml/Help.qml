@@ -70,24 +70,23 @@ Item {
         Text {
             color: "#80000000"
             y: 400
-            x: 200
+            x: 190
             leftPadding: 10
             text: "Version : <b>1.0.0</b>"
         }
         Text {
             color: "#80000000"
             y: 425
-            x: 200
+            x: 190
             leftPadding: 10
             text: "Licensé : <b>GNU GPLv3</b>"
         }
         Text {
             color: "#80000000"
             y: 450
-            x: 200
+            x: 190
             leftPadding: 10
-            text: "Fait par : <b>NGANDO BEDIM
-                               Constance Maeva .</b>" // github.com/bm777
+            text: "Fait par : <b>NGANDO BEDIM</b>" // github.com/bm777
         }
     }
     Item {
@@ -98,6 +97,7 @@ Item {
         Text {
 
             y: 250
+            x: 10
             anchors.fill: parent
             text: "1. Commencer par importer le fichier pki pour
 lancer les analyse sur le reseaux"
