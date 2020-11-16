@@ -22,7 +22,9 @@ raw_dataset = pd.read_csv("final_ds.csv",
                             names=column_names)
 
 dataset = raw_dataset.copy()
-print(len(dataset["ratio"].unique().tolist()))
+# print(len(dataset["ratio"].unique().tolist()))
+dataset = pd.get_dummies(dataset, prefix='', prefix_sep='')
+print(dataset.tail())
 
 # split dataset into train and test set
 train = dataset.sample(frac=0.8, random_state=0)
