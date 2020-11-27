@@ -4,9 +4,11 @@ import QtGraphicalEffects 1.0
 import QtQuick.Controls 2.15
 import Qt.labs.platform 1.1
 //import QtQuick.Controls.Styles 2.15
-import "operations.js" as Logic
+import QtQuick.LocalStorage 2.15
+import "script.js" as Code
 // home_color 780000ff
 Item {
+    id: _root
     width: root.width
     height: root.height
     x: 0
@@ -179,11 +181,11 @@ Item {
                             bottom_infos.visible = false
                         }
                     }
-                    MenuItem {
-                        text: "Historique..."
+//                    MenuItem {
+//                        text: "Historique..."
 
 
-                    }
+//                    }
                     MenuItem {
                         text: "Aide !"
                         onTriggered: {
@@ -279,51 +281,101 @@ Item {
                             id: item_config
                             anchors.fill: parent
                             visible: false
-                            Row {
-                                anchors.centerIn: parent
-                                Switch {
-                                    id: select1
-                                    text: "Prévision"
-                                    background: Rectangle {
-                                        color: select1.down ? "#289c88ff" : "#fff"
-                                        radius: 20
-                                    }
-                                    TapHandler {
-                                        id: handler1
-                                        onTapped: {
-                                            if(select1.checked){
-                                                select2.checkable = false;
-                                            } else {
-                                                select2.checkable = true;
-                                            }
-                                             console.log("state1 == " + select1.checked + ", state2 == " + select2.checked);
-                                        }
-                                    }
-
+                            // ===============================
+                            Text {
+                                y: 10
+                                x: 10
+                                id: text_column
+                                font.bold: true
+                                text: "Colone à prédire"
+                            }
+                            ComboBox {
+                                id: combo_column
+                                x: 10
+                                y: text_column.height+15
+                                model: ["uplink", "downlink", "ratio", "maximum", "success"]
+                                background: Rectangle {
+                                    color: "transparent"
+                                    border.color: "#400000ff"
+                                    implicitWidth: 120
+                                    radius: 5
                                 }
-                                Switch {
-                                    id: select2
-                                    text: "Consultation"
-                                    background: Rectangle {
-                                        color: select2.down ? "#289c88ff" : "#fff"
-                                        radius: 20
-                                    }
-                                    TapHandler {
-                                        id: handler2
-                                        onTapped: {
-                                            if(select2.checked){
-                                                select1.checkable = false;
-                                            } else {
-                                                select1.checkable = true;
-                                            }
-                                             console.log("state1 == " + select1.checked + "; state2 == " + select2.checked);
-                                        }
-                                    }
+                            }
+                            // ===============================
+                            Text {
+                                y: 10
+                                x: 200
+                                id: text_ville
+                                font.bold: true
+                                text: "Ville à prédire"
+                            }
+                            ComboBox {
+                                id: combo_ville
+                                x: 200
+                                y: text_ville.height+15
+                                model: ["YDEUGW", "DLAUGW"]
+                                background: Rectangle {
+                                    color: "transparent"
+                                    border.color: "#400000ff"
+                                    implicitWidth: 120
+                                    radius: 5
+                                }
+                            }
+                            // ====================================
+                            TextField {
+                                id: input_debut
+                                x: 350
+                                y: text_ville.height+15
+                                placeholderText: "Date de début"
+                                background: Rectangle{
+                                    color: "transparent"
+                                    border.color: "#400000ff"
+                                    implicitWidth: 150
+                                    radius: 5
                                 }
                             }
                             Text {
+                                x: 510
+                                y: text_ville.height+20
+                                font.italic: true
+                                text: "jj/mm/aaaa"
+                            }
+                            // ====================================
+                            TextField {
+                                id: input_fin
+                                x: 350
+                                y: text_ville.height+70
+                                placeholderText: "Date de fin"
+                                background: Rectangle{
+                                    color: "transparent"
+                                    border.color: "#400000ff"
+                                    implicitWidth: 150
+                                    radius: 5
+                                }
+                            }
+                            Text {
+                                x: 510
+                                y: text_ville.height+72
+                                font.italic: true
+                                text: "jj/mm/aaaa"
+                            }
+                            Text {
+                                x: 100
+                                y: text_ville.height+72
+                                id: text_model
+                                text: "Model utilisé:"
+                            }
+                            Text {
+                                x: 200
+                                y: text_ville.height+72
+                                id: text_
+                                font.bold: true
+                                text: "RNN"
+                            }
+
+                            Text {
                                 id: trans
-                                text: qsTr("Appuyer sur le boutton <b>Lançer</b> pour analyser.")
+                                text: qsTr("Appuyer sur le boutton <b>Graphiques</b> pour prédire.")
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 y: 150
                                 font.pointSize: 15
@@ -336,15 +388,15 @@ Item {
                             anchors.centerIn: parent
                             visible: false
 
-                            Text {
-                                id: text_last
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                text: select2.checked ? bridge.data1 + "%" : bridge.data1
-                                y: -20
-                                Behavior on text {
-                                    NumberAnimation {running: select1.checked ? true : false; duration: select1.checked ? 2000 : 3000}
-                                }
-                            }
+//                            Text {
+//                                id: text_last
+//                                anchors.horizontalCenter: parent.horizontalCenter
+//                                text: select2.checked ? bridge.data1 + "%" : bridge.data1
+//                                y: -20
+//                                Behavior on text {
+//                                    NumberAnimation {running: select1.checked ? true : false; duration: select1.checked ? 2000 : 3000}
+//                                }
+//                            }
 
 
                             ProgressBar {
@@ -419,7 +471,7 @@ Item {
         y: 20
 //        z: -1 // derriere
         id: text_over_blur
-        text: "<b>BIENVENUE SUR LA PREVISION DE TRAFFIC DU RESEAU 4G</b>"
+        text: "<b>BIENVENUE SUR LA PREVISION DE TRAFIC DU RESEAU 4G</b>"
         color: "#ffffff"
         opacity: 0.9
         font.family: "Helvetica"
@@ -442,22 +494,22 @@ Item {
 
     }
     // =============================== user =============================
+
     User {
         id: user
+
 //        anchors.horizontalCenter: parent.horizontalCenter
 //        width: 0.98 * rot.width; height: 0.4 * rot.width
         visible: false
         headerModel: [
-            {text: "Color", width: 0.3},
-            {text: "Type", width: 0.2},
-            {text: "Hexadecimal", width: 0.5},
+            {text: "Noms", width: 1/5},
+            {text: "Type", width: 0.5/5},
+            {text: "Email", width: 1.5/5},
+            {text: "Tel", width: 1/5},
+            {text: "Password", width: 1/5},
         ]
 
-        dataModel: [
-            ['Red',    '1', '#ff0000'],
-            ['Green',   '2',  '#00ff00'],
-            ['Blue',   '3',  '#0000ff'],
-        ]
+        dataModel: Code.fillUser()
         onClicked: print('onClicked', row, JSON.stringify(rowData))
     }
 
@@ -667,6 +719,7 @@ Item {
                     }
                 Item {
 //                    color: "blue"
+                    visible: true
                     y: 120
                     height: 130
                     width: 200

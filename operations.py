@@ -1,78 +1,9 @@
 from PySide2.QtCore import *
 import xlrd
 
-def percentage(severities, occurences=[]):
-    # formula to calculate percentage depending on
-    # severities without quantity of occurences
-    #    state oof severities: minor := 10%
-    #                          major := 30%
-    #                          warning := 50%
-    #                          critical := 90%
-    # counters
-    count_minor = 0
-    count_major = 0
-    count_warning = 0
-    count_critical = 0
-
-    #var for final percentage
-    percent = 0
-    counters = 0
-
-    # states and equiv percent of each severities
-    if len(occurences) == 0:
-        for sev in severities:
-            if sev == "Minor":
-                count_minor += 1
-            if sev == "Major":
-                count_major += 1
-            if sev == "Warning":
-                count_warning += 1
-            if sev == "Critical":
-                count_critical += 1
-        counters = count_minor+count_major+count_warning+count_critical
-        percent = count_minor*10 +count_major*30 +count_warning*50 +count_critical*90
-        return float(str(round(percent / counters, 2)))
-    else:
-        for i in range(len(severities)):
-            if severities[i] == "Minor":
-                count_minor += int(occurences[i])
-            if severities[i] == "Major":
-                count_major += int(occurences[i])
-            if severities[i] == "Warning":
-                count_warning += int(occurences[i])
-            if severities[i] == "Critical":
-                count_critical += int(occurences[i])
-        counters = count_minor+count_major+count_warning+count_critical
-        percent = count_minor*10 +count_major*30 +count_warning*50 +count_critical*90
-        return float(str(round(percent / counters, 2)))
 
 
-def read_file(filename):
-    wb = xlrd.open_workbook(filename[7:len(filename)])
-    sheet = wb.sheet_by_index(0)
-    state = True
-    st1 = False
-    severities = []
-    occurences = []
-    # stop = True
-    # i = 0
-    for i in range(sheet.nrows):
-        if sheet.cell_value(i, 1) == "Severity" or sheet.cell_value(i, 1) != "":
-            if sheet.cell_value(i, 1) == "Severity":
-                if sheet.cell_value(i, 7) == "Occurrences":
-                    st1 = True
-                else:
-                    st1 = False
-            else:
-                # print(i, sheet.cell_value(i, 1), sheet.cell_value(i, 7))
-                severities.append(sheet.cell_value(i, 1))
-                if st1:
-                    occurences.append(sheet.cell_value(i, 7))
 
-
-        i += 1
-    # print(len(severities), len(occurences))
-    return severities, occurences
 
 class Worker(QObject):
 
