@@ -3,6 +3,19 @@ function getRandom(previousValue) {
 
 }
 
+// ======================================================================================
+// function tocheck the extension of filename (log)
+
+function check(filename) {
+    var str = filename.toString();
+    console.log(".xlsx");
+        return str.endsWith(".xlsx") ? true : false;
+
+}
+
+
+// ======================================================================================
+
 function fillUser() {
 
         var db = LocalStorage.openDatabaseSync("ann", "", "Employe management", 1000000);

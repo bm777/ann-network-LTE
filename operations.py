@@ -49,8 +49,7 @@ class Worker(QObject):
         #self.setD2(tmp)
 
         print("d2", self._d2)
-        severities, occurences = read_file(link)
-        percent = percentage(severities, occurences)
+        percent = 95.25
         self.setD1(percent)
         self.setD2(percent/100)
         # _d2 = percent/100

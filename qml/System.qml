@@ -296,7 +296,7 @@ Item {
                                 model: ["uplink", "downlink", "ratio", "maximum", "success"]
                                 background: Rectangle {
                                     color: "transparent"
-                                    border.color: "#400000ff"
+                                    border.color: "#100000ff"
                                     implicitWidth: 120
                                     radius: 5
                                 }
@@ -316,7 +316,7 @@ Item {
                                 model: ["YDEUGW", "DLAUGW"]
                                 background: Rectangle {
                                     color: "transparent"
-                                    border.color: "#400000ff"
+                                    border.color: "#100000ff"
                                     implicitWidth: 120
                                     radius: 5
                                 }
@@ -329,7 +329,7 @@ Item {
                                 placeholderText: "Date de début"
                                 background: Rectangle{
                                     color: "transparent"
-                                    border.color: "#400000ff"
+                                    border.color: "#100000ff"
                                     implicitWidth: 150
                                     radius: 5
                                 }
@@ -348,7 +348,7 @@ Item {
                                 placeholderText: "Date de fin"
                                 background: Rectangle{
                                     color: "transparent"
-                                    border.color: "#400000ff"
+                                    border.color: "#100000ff"
                                     implicitWidth: 150
                                     radius: 5
                                 }
@@ -378,7 +378,8 @@ Item {
                                 text: qsTr("Appuyer sur le boutton <b>Graphiques</b> pour prédire.")
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 y: 150
-                                font.pointSize: 15
+                                font.pointSize: 13
+                                opacity: 0.5
                                 font.italic: true
                                 visible: true
                             }
@@ -420,7 +421,6 @@ Item {
                                     NumberAnimation {duration: select1.checked ? 2000 : 3000}
                                 }
                             }
-
 
                         }
 
@@ -677,7 +677,7 @@ Item {
 
                 onAccepted: {
 
-                    if (Logic.check(fd.file)) {
+                    if (Code.check(fd.file)) {
                         console.log("You choose: " + fd.file);
 
                         _left.state = "Clicked";
