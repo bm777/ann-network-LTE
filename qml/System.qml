@@ -81,7 +81,7 @@ Item {
                 _left.state = "OutMouse";
                 _middle.state = "OutMouse";
                 console.log("inside on clicked");
-                if(rect.width === 900){
+                if(rect.width === 1000){
                     _right.state = "Out";
                    item_log.visible = true;
                 }
@@ -90,7 +90,7 @@ Item {
                 item_config.visible=false;
                 last.visible = false;
                 rec_r.state = "Clicked";
-                progress.value = 0.0
+//                progress.value = 0.0
             }
             onExited: {
                 rec_r.state = "OutMouse";
@@ -307,7 +307,7 @@ Item {
                                 x: 200
                                 id: text_ville
                                 font.bold: true
-                                text: "Ville à prédire"
+                                text: "Ville"
                             }
                             ComboBox {
                                 id: combo_ville
@@ -363,7 +363,7 @@ Item {
                                 x: 100
                                 y: text_ville.height+72
                                 id: text_model
-                                text: "Model utilisé:"
+                                text: "Model :"
                             }
                             Text {
                                 x: 200
@@ -417,9 +417,6 @@ Item {
                                                 //z: 10
                                             }
 
-                                Behavior on value {
-                                    NumberAnimation {duration: select1.checked ? 2000 : 3000}
-                                }
                             }
 
                         }
@@ -431,7 +428,7 @@ Item {
                         running: (_right.state === "Out") ? true : false
                         property: "height"
                         from: rect.height
-                        to: rect.height - 100
+                        to: rect.height - 130
                         duration: 500
                         easing.type: Easing.InOutQuad
                     }
@@ -441,7 +438,7 @@ Item {
                         running: (_right.state === "Out") ? true : false
                         property: "width"
                         from: rect.width
-                        to: rect.width - 300
+                        to: rect.width - 400
                         duration: 500
                         easing.type: Easing.InOutQuad
                     }
@@ -930,7 +927,7 @@ Item {
                         running: _right.state === "Clicked" ? true : false
                         property: "height"
                         from: rect.height
-                        to: rect.height + 100
+                        to: rect.height + 130
                         duration: 500
                         easing.type: Easing.InOutQuad
                     }
@@ -940,7 +937,7 @@ Item {
                         running:  _right.state === "Clicked" ? true : false
                         property: "width"
                         from: rect.width
-                        to: rect.width + 300
+                        to: rect.width + 400
                         duration: 500
                         easing.type: Easing.InOutQuad
                     }

@@ -74,7 +74,7 @@ Item {
              }
              Text {
 
-                 text: qsTr("Admin access")
+                 text: qsTr("Authentication")
                  color: "white"
                  font.pointSize: 40
                  x: root.width * 0.09
