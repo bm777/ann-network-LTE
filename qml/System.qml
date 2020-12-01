@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtGraphicalEffects 1.0
-//import QtQuick.Dialogs 1.2
+import QtCharts 2.15
 import QtQuick.Controls 2.15
 import Qt.labs.platform 1.1
 //import QtQuick.Controls.Styles 2.15
@@ -82,12 +82,12 @@ Item {
                 _middle.state = "OutMouse";
                 console.log("inside on clicked");
                 if(rect.width === 1000){
-                    _right.state = "Out";
+                    _right.state = "Out"; //out
                    item_log.visible = true;
                 }
                 _middle.visible=false;
                 item_log.visible = true;
-                item_config.visible=false;
+                //item_config.visible=false;
                 last.visible = false;
                 rec_r.state = "Clicked";
 //                progress.value = 0.0
@@ -181,11 +181,7 @@ Item {
                             bottom_infos.visible = false
                         }
                     }
-//                    MenuItem {
-//                        text: "Historique..."
 
-
-//                    }
                     MenuItem {
                         text: "Aide !"
                         onTriggered: {
@@ -388,36 +384,59 @@ Item {
                             id: last
                             anchors.centerIn: parent
                             visible: false
+//= ============= = = =    = = = ================ = = = = ================ = = = =================
+                            Item {
+                                id: item_chart
+//                                color: "white"
+                                width: 600
+                                height: 200
 
-//                            Text {
-//                                id: text_last
-//                                anchors.horizontalCenter: parent.horizontalCenter
-//                                text: select2.checked ? bridge.data1 + "%" : bridge.data1
-//                                y: -20
-//                                Behavior on text {
-//                                    NumberAnimation {running: select1.checked ? true : false; duration: select1.checked ? 2000 : 3000}
-//                                }
-//                            }
+                                ChartView {
+                                    id: chart
+                                    title: "Courbe de prévision de 'UPLINK'"
+                                    width: 600 + 400
+                                    height: 200 + 130
+                                    x: - parent.width / 2 - 200
+                                    y: - parent.height / 2 - 65
 
+                                    antialiasing: true
+                                    opacity: 0.0
 
-                            ProgressBar {
-                                id: progress
-                                value: bridge.data2
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                width: 500
-                                y: 50
-                                clip: true
-                                contentItem: Rectangle {
-                                                anchors.left: progress.left
-                                                anchors.verticalCenter: progress.verticalCenter
-                                                width: progress.visualPosition * progress.width
-                                                height: progress.height
-                                                radius: 2
-                                                color: "#780000ff"
-                                                //z: 10
-                                            }
+                                    // x abcis to be used in the seriesAdded data
+                                    ValueAxis {
+                                        id: valueAbxis
+                                        min: 2015
+                                        max: 2021
+                                        tickCount: 7
+                                        labelFormat: "%.0f"
+                                    }
+                                    AreaSeries {
+                                        name: "YDEUGW"
+                                        axisX: valueAbxis
+                                        color: "#800000ff"
+                                        upperSeries: LineSeries {
+                                            XYPoint{x: 2015; y:12}
+                                            XYPoint{x: 2016; y:11}
+                                            XYPoint{x: 2017; y:12}
+                                            XYPoint{x: 2018; y:9}
+                                            XYPoint{x: 2019; y:7}
+                                            XYPoint{x: 2020; y:17}
+                                            XYPoint{x: 2021; y:25}
+                                        }
+                                    }
+
+                                    NumberAnimation {
+                                        targets: chart
+                                        running: rect.width === 1000 ? true : false
+                                        properties: "opacity"
+                                        duration: 2000
+                                        from: 0
+                                        to: 1
+                                    }
+                                }
 
                             }
+
 
                         }
 
