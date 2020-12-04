@@ -1,36 +1,250 @@
+import os
+import datetime
+
+import IPython
+import IPython.display
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-
-np.set_printoptions(precision=3, suppress=True)
-
 import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
-# from tensorflow.compat.v2.keras.layers.experimental import preprocessing
+
+# setting uo usage of GPU
+physical_devices = tf.config.list_physical_devices('GPU')
+tf.config.experimental.set_memory_growth(physical_devices[0], enable=True)
+
+mpl.rcParams['figure.figsize'] = (8, 6)
+mpl.rcParams['axes.grid'] = False
+
+# reading csv dataset
+df = pd.read_csv("final_ds.csv")
+
+# drop town name in csv file
+date_time = pd.to_datetime(df.pop('Start Time'), format='%Y.%m.%d %H:%M:%S')
+town = df.pop("NE Name")
 
 
-column_names = ["ratio",        # label is the output predicted
-                "maximum",      # S+PGW maximum simultaneously active bearers (number)s
-                "success",      # S+PGW successful bearer creations (times)
-                "uplink",       # S1-U uplink user traffic in KB (kB)
-                "downlink"]     # S1-U downlink user traffic in KB (kB)
+# describe and tranposed
+tmp = df.describe().transpose()
+means = {'ratio': tmp["mean"]["ratio"],
+          'maximum': tmp["mean"]["maximum"],
+          'success': tmp["mean"]["success"],
+          'uplink': tmp["mean"]["uplink"],
+          'downlink': tmp["mean"]["downlink"]}
+stds = {'ratio': tmp["std"]["ratio"],
+          'maximum': tmp["std"]["maximum"],
+          'success': tmp["std"]["success"],
+          'uplink': tmp["std"]["uplink"],
+          'downlink': tmp["std"]["downlink"]}
+
+# coordonnées du temps
+timestamp_s = date_time.map(datetime.datetime.timestamp)
+
+day = 24*60*60
+year = (365.2425)*day
+
+df['Day sin'] = np.sin(timestamp_s * (2 * np.pi / day))
+df['Day cos'] = np.cos(timestamp_s * (2 * np.pi / day))
+df['Year sin'] = np.sin(timestamp_s * (2 * np.pi / year))
+df['Year cos'] = np.cos(timestamp_s * (2 * np.pi / year))
+
+# create dataset
+column_indices = {name: i for i, name in enumerate(df.columns)}
+
+print(column_indices)
+n = len(df)
+train_df = df[0:int(n*0.7)]
+val_df = df[int(n*0.7):int(n*0.9)]
+test_df = df[int(n*0.9):]
+
+# normalization of data of our dataset
+train_mean = train_df.mean()
+train_std = train_df.std()
+
+train_df = (train_df - train_mean) / train_std
+val_df = (val_df - train_mean) / train_std
+test_df = (test_df - train_mean) / train_std
+result = train_df * train_std + train_mean
+
+# windowing data
+# 1. generate a window
+class WindowGenerator():
+    def __init__(self, input_width, label_width, shift,
+               train_df=train_df, val_df=val_df, test_df=test_df,
+               label_columns=None):
+        # Store the raw data.
+        self.train_df = train_df
+        self.val_df = val_df
+        self.test_df = test_df
+
+        # Work out the label column indices.
+        self.label_columns = label_columns
+        if label_columns is not None:
+            self.label_columns_indices = {name: i for i, name in
+                                        enumerate(label_columns)}
+        self.column_indices = {name: i for i, name in
+                               enumerate(train_df.columns)}
+
+        # Work out the window parameters.
+        self.input_width = input_width
+        self.label_width = label_width
+        self.shift = shift
+
+        self.total_window_size = input_width + shift
+
+        self.input_slice = slice(0, input_width)
+        self.input_indices = np.arange(self.total_window_size)[self.input_slice]
+
+        self.label_start = self.total_window_size - self.label_width
+        self.labels_slice = slice(self.label_start, None)
+        self.label_indices = np.arange(self.total_window_size)[self.labels_slice]
+
+    def __repr__(self):
+        return '\n'.join([
+            f'Total window size: {self.total_window_size}',
+            f'Input indices: {self.input_indices}',
+            f'Label indices: {self.label_indices}',
+            f'Label column name(s): {self.label_columns}'])
+
+def split_window(self, features):
+    inputs = features[:, self.input_slice, :]
+    labels = features[:, self.labels_slice, :]
+    if self.label_columns is not None:
+        labels = tf.stack(
+            [labels[:, :, self.column_indices[name]] for name in self.label_columns],
+            axis=-1)
+
+    # Slicing doesn't preserve static shape information, so set the shapes
+    # manually. This way the `tf.data.Datasets` are easier to inspect.
+    inputs.set_shape([None, self.input_width, None])
+    labels.set_shape([None, self.label_width, None])
+
+    return inputs, labels
+WindowGenerator.split_window = split_window
+
+def make_dataset(self, data):
+    data = np.array(data, dtype=np.float32)
+    ds = tf.keras.preprocessing.timeseries_dataset_from_array(
+      data=data,
+      targets=None,
+      sequence_length=self.total_window_size,
+      sequence_stride=1,
+      shuffle=True,
+      batch_size=32,)
+
+    ds = ds.map(self.split_window)
+
+    return ds
+WindowGenerator.make_dataset = make_dataset
+
+@property
+def train(self):
+    return self.make_dataset(self.train_df)
+
+@property
+def val(self):
+    return self.make_dataset(self.val_df)
+
+@property
+def test(self):
+    return self.make_dataset(self.test_df)
+
+@property
+def example(self):
+    """Get and cache an example batch of `inputs, labels` for plotting."""
+    result = getattr(self, '_example', None)
+    if result is None:
+        # No example batch was found, so get one from the `.train` dataset
+        result = next(iter(self.train))
+        # And cache it for next time
+        self._example = result
+    return result
+WindowGenerator.train = train
+WindowGenerator.val = val
+WindowGenerator.test = test
+WindowGenerator.example = example
+
+def plot(self, model=None, plot_col='ratio', max_subplots=3):
+    inputs, labels = self.example
+    plt.figure(figsize=(12, 8))
+    plot_col_index = self.column_indices[plot_col]
+
+    max_n = min(max_subplots, len(inputs))
+    for n in range(max_n):
+        if n == max_n - 1:
+            plt.subplot(3, 1, n+1)
+            plt.ylabel(f'{plot_col} [normed]')
+            plt.plot(self.input_indices, inputs[n, :, plot_col_index] * stds[plot_col] + means[plot_col],
+                     label='Inputs', marker='.', zorder=-10)
+
+            if self.label_columns:
+                label_col_index = self.label_columns_indices.get(plot_col, None)
+            else:
+                label_col_index = plot_col_index
+
+            if label_col_index is None:
+                continue
+
+            plt.scatter(self.label_indices, labels[n, :, label_col_index] * stds[plot_col] + means[plot_col],
+                        edgecolors='k', label='Labels', c='#2ca02c', s=64)
+            print("axis : ", self.label_indices)
+            if model is not None:
+                predictions = model(inputs)
+
+                plt.scatter(self.label_indices, predictions[n, :, label_col_index] * stds[plot_col] + means[plot_col],
+                          marker='X', edgecolors='k', label='Predictions',
+                          c='#ff7f0e', s=64)
+
+            if n == 0:
+                plt.legend()
+
+    plt.xlabel('Time [h]')
+    plt.show()
+    return self.label_indices, predictions[n, :, label_col_index]  * stds[plot_col] + means[plot_col]
+
+WindowGenerator.plot = plot
 
 
-raw_dataset = pd.read_csv("final_ds.csv",
-                            names=column_names)
+MAX_EPOCHS = 200
+# compile and trian prediction model
+def compile_and_fit(model, window, patience=3):
+    early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss',
+                                                    patience=patience,
+                                                    mode='min')
 
-dataset = raw_dataset.copy()
-# print(len(dataset["ratio"].unique().tolist()))
-dataset = pd.get_dummies(dataset, prefix='', prefix_sep='')
-print(dataset.tail())
+    model.compile(loss=tf.losses.MeanSquaredError(), # MeanSquaredError
+                optimizer=tf.optimizers.Adam(),
+                metrics=[tf.metrics.MeanAbsoluteError()]) # MeanAbsoluteError
 
-# split dataset into train and test set
-train = dataset.sample(frac=0.8, random_state=0)
-test = dataset.drop(train.index)
+    history = model.fit(window.train, epochs=MAX_EPOCHS,
+                      validation_data=window.val,
+                      callbacks=[early_stopping])
+    return history
 
-# inspectation of data
-df = train[['maximum', "success", "uplink", "downlink"]]
+def standalone(col="uplink", nb_day=1):
+    if col not in ['uplink', 'downlink', 'ratio', 'maximum', 'success']:
+        return None
 
-sns.pairplot(df)
+    nb_hour = 24
+    lstm_model = tf.keras.models.Sequential([
+        tf.keras.layers.LSTM(32, return_sequences=True),
+        tf.keras.layers.Dense(units=1)
+    ])
+
+    # define class for window
+    wide_window = WindowGenerator(
+    input_width=nb_hour * nb_day, label_width=nb_hour * nb_day, shift=nb_hour * nb_day,
+    label_columns=['{}'.format(col)])
+
+    # train prediction model
+    history = compile_and_fit(lstm_model, wide_window)
+    axis, y = wide_window.plot(lstm_model, plot_col="{}".format(col))
+
+    # data
+    print("axis : ",list(axis), "\ny : ", list(y.numpy()))
+
+
+if __name__ == '__main__':
+
+    standalone(col="maximum", nb_day=9)
