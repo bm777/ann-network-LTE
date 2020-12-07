@@ -29,5 +29,6 @@ if __name__ == "__main__":
     if not engine.rootObjects():
         sys.exit(-1)
 
-    work.d1.connect(work.setD1)
+    work.list_town.connect(work.setTown)
+    work.list_col.connect(work.setCol)
     app.exec_()

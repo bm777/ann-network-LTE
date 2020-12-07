@@ -13,7 +13,8 @@ Item {
     height: root.height
     x: 0
     y:0
-
+    property var list_town: []
+    property var list_col: []
     ValueSource {
         id: valueSource
     }
@@ -289,7 +290,10 @@ Item {
                                 id: combo_column
                                 x: 10
                                 y: text_column.height+15
-                                model: ["uplink", "downlink", "ratio", "maximum", "success"]
+                                model: {
+                                    return list_col
+                                }
+
                                 background: Rectangle {
                                     color: "transparent"
                                     border.color: "#100000ff"
@@ -309,7 +313,11 @@ Item {
                                 id: combo_ville
                                 x: 200
                                 y: text_ville.height+15
-                                model: ["YDEUGW", "DLAUGW"]
+                                model: {
+                                    return list_town
+//                                    ["YDEUGW", "DLAUGW"]
+                                }
+
                                 background: Rectangle {
                                     color: "transparent"
                                     border.color: "#100000ff"
@@ -359,7 +367,7 @@ Item {
                                 x: 100
                                 y: text_ville.height+72
                                 id: text_model
-                                text: "Model :"
+                                text: "Model utilisé :"
                             }
                             Text {
                                 x: 200
@@ -694,14 +702,16 @@ Item {
                 onAccepted: {
 
                     if (Code.check(fd.file)) {
-                        console.log("You choose: " + fd.file);
 
                         _left.state = "Clicked";
                         _middle.state = "Clicked"
                         item_log.visible = false;
                         item_config.visible = true;
-                        console.log("from python1: " + bridge.data1);
-                        console.log("from python2: " + bridge.data2);
+                        var l = bridge.load_from_python(fd.file)
+                        list_town = l[1]
+                        list_col = l[0]
+//                        print(list_col, list_town)
+
                     } else {
 
                     }
@@ -710,7 +720,7 @@ Item {
                     console.log("Cancelled")
                     _left.state = "OutMouse";
                     _middle.state = "OutMouse";
-                    _right.state = "OutMouse"
+                    _right.state = "OutMouse";
                 }
                Component.onCompleted: visible = false;
             }
@@ -937,7 +947,7 @@ Item {
                                 _right.state = "Clicked";
                                 item_config.visible = false;
                                 last.visible = true;
-                                bridge.loadUrl(fd.file);
+                                bridge.predict(fd.file, combo_column.currentText, combo_ville.currentText);
                            }
                         }
                     }

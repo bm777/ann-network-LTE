@@ -18,34 +18,25 @@ mpl.rcParams['figure.figsize'] = (8, 6)
 mpl.rcParams['axes.grid'] = False
 
 # reading csv dataset
-df = pd.read_csv("~/qt/project/ann-network/dataset.csv")
+df = pd.read_csv("final_ds.csv")
 
 # drop town name in csv file
 date_time = pd.to_datetime(df.pop('Start Time'), format='%Y.%m.%d %H:%M:%S')
+town = df.pop("NE Name")
+
 
 # describe and tranposed
 tmp = df.describe().transpose()
-c = list(df.columns)
-
-if "uplink" in c:
-    means = {
-              'uplink': tmp["mean"]["uplink"],
-              'downlink': tmp["mean"]["downlink"]}
-    stds = {
-            'uplink': tmp["std"]["uplink"],
-            'downlink': tmp["std"]["downlink"]}
-
-else:
-    print("uplink not inside")
-    means = {'ratio': tmp["mean"]["ratio"],
-            'maximum': tmp["mean"]["maximum"],
-            'success': tmp["mean"]["success"],
-            }
-    stds = {'ratio': tmp["std"]["ratio"],
-              'maximum': tmp["std"]["maximum"],
-              'success': tmp["std"]["success"],
-              }
-
+means = {'ratio': tmp["mean"]["ratio"],
+          'maximum': tmp["mean"]["maximum"],
+          'success': tmp["mean"]["success"],
+          'uplink': tmp["mean"]["uplink"],
+          'downlink': tmp["mean"]["downlink"]}
+stds = {'ratio': tmp["std"]["ratio"],
+          'maximum': tmp["std"]["maximum"],
+          'success': tmp["std"]["success"],
+          'uplink': tmp["std"]["uplink"],
+          'downlink': tmp["std"]["downlink"]}
 
 # coordonnées du temps
 timestamp_s = date_time.map(datetime.datetime.timestamp)
@@ -75,7 +66,6 @@ train_df = (train_df - train_mean) / train_std
 val_df = (val_df - train_mean) / train_std
 test_df = (test_df - train_mean) / train_std
 result = train_df * train_std + train_mean
-
 
 # windowing data
 # 1. generate a window
@@ -175,7 +165,7 @@ WindowGenerator.val = val
 WindowGenerator.test = test
 WindowGenerator.example = example
 
-def plot(self, model=None, plot_col='ratio', max_subplots=3, type="ugv"):
+def plot(self, model=None, plot_col='ratio', max_subplots=3):
     inputs, labels = self.example
     plt.figure(figsize=(12, 8))
     plot_col_index = self.column_indices[plot_col]
@@ -252,7 +242,6 @@ def standalone(col="uplink", nb_day=1):
     axis, y = wide_window.plot(lstm_model, plot_col="{}".format(col))
 
     # data
-    return axis, y
     print("axis : ",list(axis), "\ny : ", list(y.numpy()))
 
 
