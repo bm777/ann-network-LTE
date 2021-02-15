@@ -8,6 +8,7 @@ from PySide2.QtQml import *
 from PySide2 import QtNetwork
 #from PySide2 import QtOpenGL
 from operations import  *
+import threading
 
 
 if __name__ == "__main__":
@@ -29,6 +30,9 @@ if __name__ == "__main__":
     if not engine.rootObjects():
         sys.exit(-1)
 
+    # threading.Thread(target=work.predict, daemon=True, args=[]).start()
+
     work.list_town.connect(work.setTown)
     work.list_col.connect(work.setCol)
+    work.d.connect(work.setD)
     app.exec_()

@@ -7,6 +7,8 @@ Item {
     width: root.width * 0.60
     height: root.height * 1
     property string username: ""
+    property string  username_data: ""
+    property string  password_data: ""
 
     Rectangle {
         id: _rect_leftview
@@ -165,7 +167,7 @@ Item {
                 id: register
                 x: 90
                 y: 430
-                visible: false
+                visible: true
                 text: "Register"
                 contentItem: Text {
                     text: register.text
@@ -193,6 +195,15 @@ Item {
                 background: Rectangle {
                     color: "#2c2c54"
                     radius: 4
+                }
+                MouseArea {
+                    anchors.fill: login
+                    onClicked: {
+                        username_data =  input_username.text
+                        password_data = input_password.text
+                        print("username = ", username_data)
+                        print("password = ", password_data)
+                    }
                 }
             }
             // ==========================================================================================

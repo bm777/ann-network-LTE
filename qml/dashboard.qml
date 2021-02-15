@@ -24,18 +24,27 @@ Window {
     }
     // ====================================login========================================
     Login {
-        visible: false
+        id: login
+        visible: !system.visible
     }
 
     Gry {
-        visible: false
+        id: gry
+        visible: login.visible
     }
     // ==================================================================================
 
     // ================================== dahboard ======================================
     System {
         id: system
-        visible: true
+        visible: {
+            if(login.username_data == "admin" && login.password_data == "1234"){
+                return true
+            }
+            else {
+                return false
+            }
+        }
     }
 
 

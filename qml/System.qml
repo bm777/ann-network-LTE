@@ -15,6 +15,8 @@ Item {
     y:0
     property var list_town: []
     property var list_col: []
+    property var axis: []
+    property var ord: []
     ValueSource {
         id: valueSource
     }
@@ -330,7 +332,7 @@ Item {
                                 id: input_debut
                                 x: 350
                                 y: text_ville.height+15
-                                placeholderText: "Date de début"
+                                placeholderText: "Nombre de jour"
                                 background: Rectangle{
                                     color: "transparent"
                                     border.color: "#100000ff"
@@ -342,11 +344,12 @@ Item {
                                 x: 510
                                 y: text_ville.height+20
                                 font.italic: true
-                                text: "jj/mm/aaaa"
+                                text: "10 jours max"
                             }
                             // ====================================
                             TextField {
                                 id: input_fin
+                                visible: false
                                 x: 350
                                 y: text_ville.height+70
                                 placeholderText: "Date de fin"
@@ -359,6 +362,7 @@ Item {
                             }
                             Text {
                                 x: 510
+                                visible: false
                                 y: text_ville.height+72
                                 font.italic: true
                                 text: "jj/mm/aaaa"
@@ -395,43 +399,69 @@ Item {
 //= ============= = = =    = = = ================ = = = = ================ = = = =================
                             Item {
                                 id: item_chart
-//                                color: "white"
+//                                color: "red"
                                 width: 600
                                 height: 200
 
                                 ChartView {
                                     id: chart
-                                    title: "Courbe de prévision de 'UPLINK'"
+                                    title: "Courbe de prévision de '" + combo_column.currentText +"'"
                                     width: 600 + 400
                                     height: 200 + 130
+                                    antialiasing: true
                                     x: - parent.width / 2 - 200
                                     y: - parent.height / 2 - 65
 
-                                    antialiasing: true
-                                    opacity: 0.0
-
-                                    // x abcis to be used in the seriesAdded data
                                     ValueAxis {
-                                        id: valueAbxis
-                                        min: 2015
-                                        max: 2021
-                                        tickCount: 7
-                                        labelFormat: "%.0f"
-                                    }
-                                    AreaSeries {
-                                        name: "YDEUGW"
-                                        axisX: valueAbxis
-                                        color: "#800000ff"
-                                        upperSeries: LineSeries {
-                                            XYPoint{x: 2015; y:12}
-                                            XYPoint{x: 2016; y:11}
-                                            XYPoint{x: 2017; y:12}
-                                            XYPoint{x: 2018; y:9}
-                                            XYPoint{x: 2019; y:7}
-                                            XYPoint{x: 2020; y:17}
-                                            XYPoint{x: 2021; y:25}
+                                            id: xAxis
+                                            min: 1
+                                            max: 20
+                                            tickCount: 20
                                         }
+
+                                    SplineSeries {
+                                        axisX: xAxis
+                                        name: combo_column.currentText
+
+                                               XYPoint { x: 1; y: 99.2 }
+                                               XYPoint { x: 2; y: 99.4 }
+                                               XYPoint { x: 3; y: 97.1 }
+                                               XYPoint { x: 4; y: 98.6 }
+                                               XYPoint { x: 5; y: 98.3 }
+                                               XYPoint { x: 6; y: 98.1 }
+                                               XYPoint { x: 7; y: 100.0 }
+                                               XYPoint { x: 8; y: 99.3 }
+                                               XYPoint { x: 9; y: 99.1 }
+                                               XYPoint { x: 10; y: 98.2 }
+                                               XYPoint { x: 11; y: 98.2 }
+                                               XYPoint { x: 12; y: 96.4 }
+                                               XYPoint { x: 13; y: 97.1 }
+                                               XYPoint { x: 14; y: 98.6 }
+                                               XYPoint { x: 15; y: 98.3 }
+                                               XYPoint { x: 16; y: 98.1 }
+                                               XYPoint { x: 17; y: 95.0 }
+                                               XYPoint { x: 18; y: 94.3 }
+                                               XYPoint { x: 19; y: 96.1 }
+                                               XYPoint { x: 20; y: 96.2 }
+//                                               XYPoint { x: 21; y: 96.2 }
+//                                               XYPoint { x: 22; y: 97.4 }
+//                                               XYPoint { x: 23; y: 95.1 }
+//                                               XYPoint { x: 24; y: 98.6 }
+//                                               XYPoint { x: 25; y: 97.3 }
+//                                               XYPoint { x: 26; y: 99.1 }
+//                                               XYPoint { x: 27; y: 100.0 }
+//                                               XYPoint { x: 28; y: 99.3 }
+//                                               XYPoint { x: 29; y: 99.1 }
+//                                               XYPoint { x: 30; y: 98.2 }
                                     }
+                                    Text {
+                                            id: txt
+                                            y: parent.height - txt.height * 1.5
+                                            x: parent.width - txt.width * 2
+                                            text: "<b>Jour<b> (jr)"
+//                                            color: "white"
+                                        }
+
 
                                     NumberAnimation {
                                         targets: chart
@@ -710,7 +740,7 @@ Item {
                         var l = bridge.load_from_python(fd.file)
                         list_town = l[1]
                         list_col = l[0]
-//                        print(list_col, list_town)
+//                        print(l[1])
 
                     } else {
 
@@ -947,7 +977,10 @@ Item {
                                 _right.state = "Clicked";
                                 item_config.visible = false;
                                 last.visible = true;
-                                bridge.predict(fd.file, combo_column.currentText, combo_ville.currentText);
+                                var t = bridge.predict(fd.file, combo_column.currentText, combo_ville.currentText, input_debut.text);
+
+                                axis = t[0]
+                                ord = t[1]
                            }
                         }
                     }

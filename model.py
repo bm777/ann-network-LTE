@@ -198,7 +198,7 @@ def plot(self, model=None, plot_col='ratio', max_subplots=3, type="ugv"):
 
             plt.scatter(self.label_indices, labels[n, :, label_col_index] * stds[plot_col] + means[plot_col],
                         edgecolors='k', label='Labels', c='#2ca02c', s=64)
-            print("axis : ", self.label_indices)
+
             if model is not None:
                 predictions = model(inputs)
 
@@ -237,6 +237,7 @@ def standalone(col="uplink", nb_day=1):
         return None
 
     nb_hour = 24
+    nb_day = int(nb_day)
     lstm_model = tf.keras.models.Sequential([
         tf.keras.layers.LSTM(32, return_sequences=True),
         tf.keras.layers.Dense(units=1)
@@ -246,6 +247,7 @@ def standalone(col="uplink", nb_day=1):
     wide_window = WindowGenerator(
     input_width=nb_hour * nb_day, label_width=nb_hour * nb_day, shift=nb_hour * nb_day,
     label_columns=['{}'.format(col)])
+    print("number of day", nb_day)
 
     # train prediction model
     history = compile_and_fit(lstm_model, wide_window)
@@ -253,7 +255,7 @@ def standalone(col="uplink", nb_day=1):
 
     # data
     return axis, y
-    print("axis : ",list(axis), "\ny : ", list(y.numpy()))
+
 
 
 if __name__ == '__main__':
